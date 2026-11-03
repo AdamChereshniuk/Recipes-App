@@ -87,7 +87,7 @@ import { useRecipes } from "@/composable/useRecipe";
                             <router-link :to="getPath('REGISTER')">Регистрация</router-link>
                         </button>
                     </div>
-                    <div class="header__user" v-if="user !== null">
+                    <div class="header__user" v-if="user !== null && user !== undefined">
                         <router-link :to="getPath('PROFILE')">
                             <img :src="user_icon" :alt="user.user_metadata.first_name">
                             <span>{{ user.user_metadata.first_name }} {{ user.user_metadata.last_name }}</span>

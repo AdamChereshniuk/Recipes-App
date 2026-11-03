@@ -1,5 +1,5 @@
 export const ROUTES_PATHS = {
-    HOME: "/Recipes-App/",
+    HOME: "/",
     REGISTER: "/register",
     LOGIN: "/login",
     PROFILE: "/profile",

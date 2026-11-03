@@ -24,30 +24,27 @@
     const newPasswordError = ref("");
 
     // Методы
-    async function updateProfileToSupabase(firstName, lastName, nickname, email, avatarUrl) {
-        try {
-            await updateProfile(user.value.id, {
-                first_name: firstName,
-                last_name: lastName,
-                nickname: nickname,
-                email: email,
-            });
+    async function updateProfileToSupabase(firstName, lastName, nickname, avatarUrl) {
+        if(!user.value.id) return;
 
-            // window.location.href = ROUTES_PATHS.PROFILE;
-        } catch (err) {
-            newDataError.value = err.message || "Ошибка при сохранении профиля";
-        };
+        await updateProfile(user.value.id, {
+            first_name: firstName,
+            last_name: lastName,
+            nickname: nickname,
+            avatar_url: avatarUrl,
+        });
+
+        window.location.href = ROUTES_PATHS.PROFILE;
     };
     const setNewData = () => {
         const newDataFirstNameValue = newData.value.firstName.trim().replaceAll(" ", "");
         const newDataLastNameValue = newData.value.lastName.trim().replaceAll(" ", "");
         const newDataNicknameValue = newData.value.nickname.trim().replaceAll(" ", "");
-        const newDataEmailValue = newData.value.email.trim().replaceAll(" ", "");
         const newDataAvatarUrlValue = newData.value.avatarUrl !== null && newData.value.avatarUrl !== undefined && newData.value.avatarUrl !== "" ? newData.value.avatarUrl.trim().replaceAll(" ", "") : undefined;
 
-        if(newDataFirstNameValue !== "" && newDataLastNameValue !== "" && newDataNicknameValue !== "" && newDataEmailValue !== "") {
-            updateProfileToSupabase(newDataFirstNameValue, newDataLastNameValue, newDataNicknameValue, newDataEmailValue, newDataAvatarUrlValue);
-        } else if(newDataFirstNameValue == "" || newDataLastNameValue == "" || newDataNicknameValue == "" || newDataEmailValue == "") {
+        if(newDataFirstNameValue !== "" && newDataLastNameValue !== "" && newDataNicknameValue !== "") {
+            updateProfileToSupabase(newDataFirstNameValue, newDataLastNameValue, newDataNicknameValue, newDataAvatarUrlValue);
+        } else if(newDataFirstNameValue == "" || newDataLastNameValue == "" || newDataNicknameValue == "") {
             newDataError.value = "Заполните все поля";
         };
     };
@@ -57,7 +54,15 @@
 
     // onMounted
     onMounted(async () => {
-        if (user.value) await fetchProfile(user.value.id);
+        await fetchProfile(user.value.id).then(data => {
+            console.log(data);
+            newData.value = {
+                firstName: data.first_name,
+                lastName: data.last_name,
+                email: user.value.user_metadata.email,
+                nickname: data.nickname,
+            };
+        });
     });
 
     // const setNewPassword = () => {
@@ -113,7 +118,7 @@
                         </li>
                     </ul> -->
                 </div>
-                <div class="profile-bottom">
+                <!-- <div class="profile-bottom">
                     <ul class="profile-bottom__list">
                         <li class="profile-bottom__item">
                             <span class="title">Изменить данные</span>
@@ -122,10 +127,7 @@
                                     <input class="input" type="text" placeholder="Имя" v-model="newData.firstName">
                                     <input class="input" type="text" placeholder="Фамилия" v-model="newData.lastName">
                                 </div>
-                                <div class="profile-bottom__inputs">
-                                    <input class="input" type="text" placeholder="Email" v-model="newData.email">
-                                    <input class="input" type="text" placeholder="Никнейм" v-model="newData.nickname">
-                                </div>
+                                <input class="input" type="text" placeholder="Никнейм" v-model="newData.nickname">
                                 <input class="input" type="text" placeholder="Ссылка на аватар" v-model="newData.avatarUrl">
                                 <span class="profile-bottom__error" v-if="newDataError !== ''">{{ newDataError }}</span>
                                 <button class="btn" style="width: 100%;" @click="setNewData">Сохранить</button>
@@ -142,7 +144,7 @@
                             </div>
                         </li>
                     </ul>
-                </div>
+                </div> -->
             </div>
         </div>
     </div>

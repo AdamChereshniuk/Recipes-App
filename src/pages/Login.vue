@@ -24,18 +24,16 @@
     async function loginUserToSupabase(email, password) {
         error.value = "";
 
-        const { data, err } = await supabase.auth.signInWithPassword({ email: email, password: password });
+        await supabase.auth.signInWithPassword({ email: email, password: password }).then(res => {
+            if (res.error) {
+                error.value = "Неверный email или пароль";
+                return;
+            };
 
-        if (err) {
-            error.value = "Неверный email или пароль";
-            return;
-        };
-
-        window.location.href = ROUTES_PATHS.HOME;
+            window.location.href = ROUTES_PATHS.HOME;
+        });
     };
-    const loginUser = (e) => {
-        e.preventDefault();
-
+    const loginUser = () => {
         const userDataObj = userData.value;
 
         if(userDataObj.email !== "" && userDataObj.password !== "") {
@@ -56,7 +54,7 @@
 
         // Отправляем запрос
         try {
-            await supabase.auth.resetPasswordForEmail(clearEmail);
+            await supabase.auth.resetPasswordForEmail(clearEmail, { redirectTo: "https://adamchereshniuk.github.io/Recipes-App/" });
             isSuccess.value = true;
         } catch (err) {
             passwordResetModalError.value = err.message || "Ошибка при отправке письма";
@@ -64,38 +62,6 @@
     };
     const openPasswordResetModal = () => isPasswordResetModalOpen.value = true;
     const closePasswordResetModal = () => isPasswordResetModalOpen.value = false;
-    // const sendPasswordResetEmail = () => {
-    //     const emailForPasswordResetValue = emailForPasswordReset.value;
-
-    //     const userFromLocalStorage = allUsers.filter(user => user.email === emailForPasswordResetValue)[0];
-
-    //     if(emailForPasswordResetValue === null || emailForPasswordResetValue === "" || emailForPasswordResetValue.length < 11 || !emailForPasswordResetValue.includes("@gmail.com")) {
-    //         passwordResetModalError.value = "Введите корректный email";
-    //         return;
-    //     } else if(userFromLocalStorage === undefined) {
-    //         passwordResetModalError.value = "Пользователь с таким email не существует";
-    //         return;
-    //     };
-
-    //     const clearEmail = emailForPasswordResetValue.trim().replaceAll(" ", "");
-    //     const token = clearEmail.split("@")[0];
-    //     const link = `http://localhost:5173/reset-password?token=${token}`; // https://adamchereshniuk.github.io/Recipes-App/reset-password?token=
-        
-    //     emailjs.init("Fdqu7e4pn5UfQo5io");
-    //     emailjs.send(
-    //         "service_44nj9uy",
-    //         "template_f392zdj",
-    //         {
-    //             email: clearEmail,
-    //             link: link,
-    //         },
-    //     )
-    //     .then(response => {
-    //         isSuccess.value = true;
-    //         localStorage.setItem("resetPasswordToken", token);
-    //     })
-    //     .catch(error => console.log("Возникла ошибка:", error));
-    // };
 </script>
 
 <template>
@@ -104,7 +70,7 @@
             <div class="login__inner">
                 <div class="login__content">
                     <span class="title">Вход</span>
-                    <form class="login-form" @submit="loginUser">
+                    <form class="login-form" @submit.prevent="loginUser">
                         <div class="login-form__inputs">
                             <input class="login-form__input" type="email" placeholder="Email" v-model="userData.email">
                             <input class="login-form__input" type="password" placeholder="Пароль" v-model="userData.password">

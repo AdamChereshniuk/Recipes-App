@@ -51,9 +51,16 @@ export function useRecipes() {
 
   // Удалить рецепт
   async function deleteRecipe(id) {
+    console.log(id);
+
     const { err } = await supabase.from("recipes").delete().eq("id", id);
-    if (err) error.value = err.message;
-    window.location.href = ROUTES_PATHS.HOME;
+
+    if (err) {
+      error.value = err.message;
+      return;
+    };
+
+    // window.location.href = ROUTES_PATHS.HOME;
   };
 
   onMounted(() => fetchRecipes());
