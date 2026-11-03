@@ -84,7 +84,7 @@
             </div>
             <div class="recipe__btns">
                 <button class="btn" @click="saveChanges">Сохранить</button>
-                <button class="btn" @click="openDeleteRecipeModal" v-if="!isCreatingMode">Удалить рецепт</button>
+                <!-- <button class="btn" @click="openDeleteRecipeModal" v-if="!isCreatingMode">Удалить рецепт</button> -->
             </div>
         </div>
         <div class="modal" v-if="isDeleteRecipeModalOpen">
